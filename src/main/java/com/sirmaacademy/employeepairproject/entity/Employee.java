@@ -2,7 +2,7 @@ package com.sirmaacademy.employeepairproject.entity;
 
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "employees")
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Builder
@@ -19,7 +20,6 @@ import java.time.LocalDate;
 public class Employee {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column (name = "id")
     private Long id;
 

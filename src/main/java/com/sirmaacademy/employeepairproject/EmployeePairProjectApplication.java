@@ -12,13 +12,7 @@ public class EmployeePairProjectApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(EmployeePairProjectApplication.class, args);
-		CSVReader reader = new CSVReader();
-		String fileName = "src/main/resources/csv/input.csv";
 
-		List<Employee> employees = reader.read(fileName);
-		for (Employee employee : employees) {
-			System.out.println(employee);
-		}
 
 	}
 
