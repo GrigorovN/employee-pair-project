@@ -1,6 +1,7 @@
 package com.sirmaacademy.employeepairproject.service;
 
 import com.sirmaacademy.employeepairproject.entity.EmployeeData;
+import com.sirmaacademy.employeepairproject.filemanipulator.Reader;
 
 import java.util.List;
 
@@ -12,4 +13,6 @@ public interface EmployeeDataService {
      List<EmployeeData> getByEmployeeID(Long employeeID);
 
      boolean isExist(Long id);
+
+     void saveFromFile(String filePath, Reader reader);
 }
