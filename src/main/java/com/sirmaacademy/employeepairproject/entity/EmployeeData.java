@@ -11,17 +11,23 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "employees")
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @Builder
 @Data
-public class Employee {
+public class EmployeeData {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column (name = "id")
     private Long id;
+
+    @Column(name = "employee_id",nullable = false)
+    @NotNull
+    @Positive(message = "Employee ID must be a positive or zero value")
+    private Long employeeID;
 
     @Column(name = "project_id",nullable = false)
     @NotNull

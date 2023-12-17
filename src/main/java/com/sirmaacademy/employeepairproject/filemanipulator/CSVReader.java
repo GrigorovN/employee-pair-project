@@ -1,7 +1,7 @@
 package com.sirmaacademy.employeepairproject.filemanipulator;
 
 import com.sirmaacademy.employeepairproject.Exception.InvalidCSVInputException;
-import com.sirmaacademy.employeepairproject.entity.Employee;
+import com.sirmaacademy.employeepairproject.entity.EmployeeData;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -14,8 +14,8 @@ import java.util.Locale;
 
 public class CSVReader implements  Reader{
     @Override
-    public List<Employee> read(String fileName) {
-        List<Employee> employees = new ArrayList<>();
+    public List<EmployeeData> read(String fileName) {
+        List<EmployeeData> employeeDataList = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
 
@@ -29,14 +29,19 @@ public class CSVReader implements  Reader{
                 LocalDate dateTo = parseDate(values[3].trim());
 
 
-                Employee employee = new Employee(id,projectID,dateFrom,dateTo);
-                employees.add(employee);
+                EmployeeData employeeData =EmployeeData.builder()
+                        .employeeID(id)
+                        .projectID(projectID)
+                        .dateFrom(dateFrom)
+                        .dateTo(dateTo)
+                        .build();
+                employeeDataList.add(employeeData);
             }
         } catch (IOException | InvalidCSVInputException e) {
             e.printStackTrace();
         }
 
-        return employees;
+        return employeeDataList;
     }
     private LocalDate parseDate(String dateStr) {
         // Check if the dateStr is NULL
