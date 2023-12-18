@@ -11,4 +11,6 @@ import java.util.List;
 public interface EmployeeDataRepository extends JpaRepository<EmployeeData, Long> {
 
     List<EmployeeData> findByEmployeeID (Long employeeID);
+
+    List<EmployeeData> findByProjectID (Long projectID);
 }

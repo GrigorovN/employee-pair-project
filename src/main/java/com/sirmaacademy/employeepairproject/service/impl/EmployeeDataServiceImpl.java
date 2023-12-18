@@ -1,12 +1,14 @@
 package com.sirmaacademy.employeepairproject.service.impl;
 
 import com.sirmaacademy.employeepairproject.Exception.NotFoundException;
+import com.sirmaacademy.employeepairproject.dto.EmployeeDataResponse;
 import com.sirmaacademy.employeepairproject.entity.EmployeeData;
 import com.sirmaacademy.employeepairproject.filemanipulator.Reader;
 import com.sirmaacademy.employeepairproject.repository.EmployeeDataRepository;
 import com.sirmaacademy.employeepairproject.service.EmployeeDataService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -74,6 +76,55 @@ public class EmployeeDataServiceImpl implements EmployeeDataService {
                 }
             }
         }
+    }
+
+    @Override
+    public EmployeeDataResponse findPairWithMaxDays(Long projectID) {
+        List<EmployeeData> employeesOnProject = employeeDataRepository.findByProjectID(projectID);
+        EmployeeDataResponse pairWithMaxDays = null;
+        int maxDaysTogether = 0;
+
+        //Compare all employees who have worked on same project
+        for (int i = 0; i < employeesOnProject.size(); i++) {
+            EmployeeData firstEmployee = employeesOnProject.get(i);
+
+            for (int j = i + 1; j < employeesOnProject.size(); j++) {
+                EmployeeData secondEmployee = employeesOnProject.get(j);
+
+                if (workedTogether(firstEmployee, secondEmployee)) {
+                    int totalDaysTogether = calculateTotalDaysTogether(firstEmployee, secondEmployee);
+
+                    if (totalDaysTogether > maxDaysTogether) {
+                        maxDaysTogether = totalDaysTogether;
+                        pairWithMaxDays = new EmployeeDataResponse(
+                                firstEmployee.getEmployeeID(),
+                                secondEmployee.getEmployeeID(),
+                                totalDaysTogether
+                        );
+                    }
+                }
+            }
+        }
+        return pairWithMaxDays;
+    }
+
+    private int calculateTotalDaysTogether(EmployeeData firstEmployee, EmployeeData secondEmployee) {
+        LocalDate startDate = (firstEmployee.getDateFrom().isAfter(secondEmployee.getDateFrom())) ?
+                firstEmployee.getDateFrom() : secondEmployee.getDateFrom();
+        LocalDate endDate = (firstEmployee.getDateTo().isBefore(secondEmployee.getDateTo())) ?
+                firstEmployee.getDateTo() : secondEmployee.getDateTo();
+
+        return (int) startDate.datesUntil(endDate.plusDays(1)).count();
+    }
+
+
+    private boolean workedTogether(EmployeeData firstEmployee, EmployeeData secondEmployee) {
+        LocalDate firstStartDate =firstEmployee.getDateFrom();
+        LocalDate firstEndDate =firstEmployee.getDateTo();
+        LocalDate secondStartDate =secondEmployee.getDateFrom();
+        LocalDate secondEndDate =secondEmployee.getDateTo();
+
+        return firstStartDate.isBefore(secondEndDate) && firstEndDate.isAfter(secondStartDate);
     }
 
 }

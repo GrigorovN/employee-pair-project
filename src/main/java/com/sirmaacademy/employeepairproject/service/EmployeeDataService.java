@@ -1,5 +1,6 @@
 package com.sirmaacademy.employeepairproject.service;
 
+import com.sirmaacademy.employeepairproject.dto.EmployeeDataResponse;
 import com.sirmaacademy.employeepairproject.entity.EmployeeData;
 import com.sirmaacademy.employeepairproject.filemanipulator.Reader;
 
@@ -15,4 +16,8 @@ public interface EmployeeDataService {
      boolean isExist(Long id);
 
      void saveFromFile(String filePath, Reader reader);
+
+     EmployeeDataResponse findPairWithMaxDays(Long projectID);
+
+
 }

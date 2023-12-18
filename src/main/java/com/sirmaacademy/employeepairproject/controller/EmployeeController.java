@@ -1,14 +1,12 @@
 package com.sirmaacademy.employeepairproject.controller;
 
+import com.sirmaacademy.employeepairproject.dto.EmployeeDataResponse;
 import com.sirmaacademy.employeepairproject.entity.EmployeeData;
 import com.sirmaacademy.employeepairproject.service.EmployeeDataService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path ="api/v1/employee")
@@ -25,5 +23,11 @@ public class EmployeeController {
         EmployeeData savedEmployeeData = employeeDataService.save(employeeData);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedEmployeeData);
+    }
+
+    @GetMapping(path = "/pair/longest/{projectID}")
+    public ResponseEntity<EmployeeDataResponse> getMaxPairForProject (@PathVariable Long projectID){
+
+        return ResponseEntity.status(HttpStatus.FOUND).body(employeeDataService.findPairWithMaxDays(projectID));
     }
 }
