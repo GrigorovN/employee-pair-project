@@ -9,13 +9,12 @@ import java.util.List;
 public interface EmployeeDataService {
 
      EmployeeData save(EmployeeData employeeData);
+
      void delete(Long id);
 
      List<EmployeeData> getByEmployeeID(Long employeeID);
 
      void saveFromFile(String filePath, Reader reader);
-
-     EmployeeDataResponse findPairWithMaxDays(Long projectID);
 
      EmployeeDataResponse findPairWithMaxDays();
 

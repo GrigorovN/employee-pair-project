@@ -25,12 +25,6 @@ public class EmployeeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedEmployeeData);
     }
 
-    @GetMapping(path = "/pair/longest/{projectID}")
-    public ResponseEntity<EmployeeDataResponse> getMaxPairForProject (@PathVariable Long projectID){
-
-        return ResponseEntity.status(HttpStatus.FOUND).body(employeeDataService.findPairWithMaxDays(projectID));
-    }
-
     @GetMapping(path = "/pair/longest")
     public ResponseEntity<EmployeeDataResponse> getMaxPairForAllProject (){
             EmployeeDataResponse response = employeeDataService.findPairWithMaxDays();

@@ -26,7 +26,7 @@ public class EmployeeDataServiceImpl implements EmployeeDataService {
 
     @Override
     public void delete(Long id) {
-
+            //TODO
     }
 
     @Override
@@ -56,35 +56,6 @@ public class EmployeeDataServiceImpl implements EmployeeDataService {
     }
 
     @Override
-    public EmployeeDataResponse findPairWithMaxDays(Long projectID) {
-        List<EmployeeData> employeesOnProject = employeeDataRepository.findByProjectID(projectID);
-        EmployeeDataResponse pairWithMaxDays = null;
-        int maxDaysTogether = 0;
-
-        //Compare all employees who have worked on same project
-        for (int i = 0; i < employeesOnProject.size(); i++) {
-            EmployeeData firstEmployee = employeesOnProject.get(i);
-
-            for (int j = i + 1; j < employeesOnProject.size(); j++) {
-                EmployeeData secondEmployee = employeesOnProject.get(j);
-
-                if (workedTogether(firstEmployee, secondEmployee)) {
-                    int totalDaysTogether = calculateTotalDaysTogether(firstEmployee, secondEmployee);
-
-                    if (totalDaysTogether > maxDaysTogether) {
-                        maxDaysTogether = totalDaysTogether;
-                        pairWithMaxDays = new EmployeeDataResponse(
-                                firstEmployee.getEmployeeID(),
-                                secondEmployee.getEmployeeID(),
-                                totalDaysTogether, new HashMap<>());
-                    }
-                }
-            }
-        }
-        return pairWithMaxDays;
-    }
-
-    @Override
     public EmployeeDataResponse findPairWithMaxDays() {
         List<EmployeeDataResponse> allPairsWithTotalDays = findAllPairsWithTotalDays();
 
@@ -100,7 +71,9 @@ public class EmployeeDataServiceImpl implements EmployeeDataService {
             }
         }
 
-        maxPair.setProjectIDToDaysMap(maxProjectDaysMap);
+        if (maxPair != null) {
+            maxPair.setProjectIDToDaysMap(maxProjectDaysMap);
+        }
 
         return maxPair;
     }
@@ -113,7 +86,6 @@ public class EmployeeDataServiceImpl implements EmployeeDataService {
 
         // Map to store total days for each pair and project across all projects
         Map<List<Long>, Map<Long, Integer>> totalDaysMap = new HashMap<>();
-
 
         for (Long projectID : allProjectIds) {
             // List of all employees that work on that project
@@ -134,7 +106,7 @@ public class EmployeeDataServiceImpl implements EmployeeDataService {
                         employeePair.sort(Comparator.naturalOrder());
 
                         // Calculate total days together for the specific project
-                        int totalDaysTogether = calculateTotalDaysTogether(firstEmployee, secondEmployee);
+                        int totalDaysTogether = calculateDaysTogether(firstEmployee, secondEmployee);
 
                         // Initialize the map for the specific pair if not present
                         totalDaysMap.putIfAbsent(employeePair, new HashMap<>());
@@ -151,20 +123,20 @@ public class EmployeeDataServiceImpl implements EmployeeDataService {
                 allPairsWithTotalDays.add(new EmployeeDataResponse(
                         pair.get(0),
                         pair.get(1),
-                        calculateTotalDaysForPairAcrossProjects(projectDaysMap),
+                        calculateTotalDaysForPairForAllProjects(projectDaysMap),
                         projectDaysMap))
         );
 
         return allPairsWithTotalDays;
     }
 
-    private int calculateTotalDaysForPairAcrossProjects(Map<Long, Integer> projectDaysMap) {
+    private int calculateTotalDaysForPairForAllProjects(Map<Long, Integer> projectDaysMap) {
         return projectDaysMap.values().stream()
                 .mapToInt(Integer::intValue)
                 .sum();
     }
 
-    private int calculateTotalDaysTogether(EmployeeData firstEmployee, EmployeeData secondEmployee) {
+    private int calculateDaysTogether(EmployeeData firstEmployee, EmployeeData secondEmployee) {
         LocalDate startDate = (firstEmployee.getDateFrom().isAfter(secondEmployee.getDateFrom())) ?
                 firstEmployee.getDateFrom() : secondEmployee.getDateFrom();
         LocalDate endDate = (firstEmployee.getDateTo().isBefore(secondEmployee.getDateTo())) ?
@@ -172,7 +144,6 @@ public class EmployeeDataServiceImpl implements EmployeeDataService {
 
         return (int) startDate.datesUntil(endDate.plusDays(1)).count();
     }
-
 
     private boolean workedTogether(EmployeeData firstEmployee, EmployeeData secondEmployee) {
         LocalDate firstStartDate =firstEmployee.getDateFrom();
@@ -182,5 +153,4 @@ public class EmployeeDataServiceImpl implements EmployeeDataService {
 
         return firstStartDate.isBefore(secondEndDate) && firstEndDate.isAfter(secondStartDate);
     }
-
 }
