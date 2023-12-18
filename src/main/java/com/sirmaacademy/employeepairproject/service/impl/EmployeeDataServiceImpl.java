@@ -9,8 +9,7 @@ import com.sirmaacademy.employeepairproject.service.EmployeeDataService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class EmployeeDataServiceImpl implements EmployeeDataService {
@@ -99,13 +98,74 @@ public class EmployeeDataServiceImpl implements EmployeeDataService {
                         pairWithMaxDays = new EmployeeDataResponse(
                                 firstEmployee.getEmployeeID(),
                                 secondEmployee.getEmployeeID(),
-                                totalDaysTogether
-                        );
+                                totalDaysTogether );
                     }
                 }
             }
         }
         return pairWithMaxDays;
+    }
+
+    @Override
+    public EmployeeDataResponse findPairWithMaxDays() {
+        List<EmployeeDataResponse> allPairsWithTotalDays = findAllPairsWithTotalDays();
+
+        EmployeeDataResponse maxPair = null;
+        int maxDaysTogether = 0;
+        for (EmployeeDataResponse response : allPairsWithTotalDays) {
+            if (response.getDaysTogether() > maxDaysTogether) {
+                maxDaysTogether = response.getDaysTogether();
+                maxPair = response;
+            }
+        }
+
+        return maxPair;
+    }
+
+    public List<EmployeeDataResponse> findAllPairsWithTotalDays() {
+        List<EmployeeDataResponse> allPairsWithTotalDays = new ArrayList<>();
+
+        // List of all projects
+        List<Long> allProjectIds =employeeDataRepository.findAllProjectIDs();
+
+        // Map to store total days for each pair across all projects
+        Map<List<Long>, Integer> totalDaysMap = new HashMap<>();
+
+        for (Long projectID : allProjectIds) {
+            // List of all employees that work on that project
+            List<EmployeeData> employeesOnProject = employeeDataRepository.findByProjectID(projectID);
+
+            //Compare all employees who have worked on same project did they work together
+            for (int i = 0; i < employeesOnProject.size(); i++) {
+                EmployeeData firstEmployee = employeesOnProject.get(i);
+
+                for (int j = i + 1; j < employeesOnProject.size(); j++) {
+                    EmployeeData secondEmployee = employeesOnProject.get(j);
+
+                    if (workedTogether(firstEmployee, secondEmployee)) {
+
+                        // Create a sorted list for the employee pair to prevent duplication in the map
+                        List<Long> employeePair = Arrays.asList(
+                                firstEmployee.getEmployeeID(),
+                                secondEmployee.getEmployeeID());
+                        employeePair.sort(Comparator.naturalOrder());
+
+                        // Calculate total days together for the specific project
+                        int totalDaysTogether = calculateTotalDaysTogether(firstEmployee, secondEmployee);
+
+                        // Add or update total days in the map
+                        totalDaysMap.merge(employeePair,totalDaysTogether,Integer::sum);
+                    }
+                }
+            }
+        }
+
+        // Convert the map entries to EmployeeDataResponse objects
+        totalDaysMap.forEach((pair, days) ->
+                allPairsWithTotalDays.add(new EmployeeDataResponse(pair.get(0), pair.get(1), days))
+        );
+
+        return allPairsWithTotalDays;
     }
 
     private int calculateTotalDaysTogether(EmployeeData firstEmployee, EmployeeData secondEmployee) {

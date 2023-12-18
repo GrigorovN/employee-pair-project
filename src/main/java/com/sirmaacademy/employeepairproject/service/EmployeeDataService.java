@@ -19,5 +19,7 @@ public interface EmployeeDataService {
 
      EmployeeDataResponse findPairWithMaxDays(Long projectID);
 
+     EmployeeDataResponse findPairWithMaxDays();
+
 
 }
