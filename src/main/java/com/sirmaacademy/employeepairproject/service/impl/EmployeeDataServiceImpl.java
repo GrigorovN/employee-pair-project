@@ -1,6 +1,5 @@
 package com.sirmaacademy.employeepairproject.service.impl;
 
-import com.sirmaacademy.employeepairproject.Exception.NotFoundException;
 import com.sirmaacademy.employeepairproject.dto.EmployeeDataResponse;
 import com.sirmaacademy.employeepairproject.entity.EmployeeData;
 import com.sirmaacademy.employeepairproject.filemanipulator.Reader;
@@ -21,11 +20,6 @@ public class EmployeeDataServiceImpl implements EmployeeDataService {
     }
 
     @Override
-    public List<EmployeeData> getAll() {
-        return null;
-    }
-
-    @Override
     public EmployeeData save(EmployeeData employeeData) {
         return employeeDataRepository.save(employeeData);
     }
@@ -36,29 +30,13 @@ public class EmployeeDataServiceImpl implements EmployeeDataService {
     }
 
     @Override
-    public EmployeeData getById(Long id) {
-
-        return employeeDataRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Employee with id = %d not found", id)));
-    }
-
-    @Override
     public List<EmployeeData> getByEmployeeID(Long employeeID) {
         return employeeDataRepository.findByEmployeeID(employeeID);
     }
 
     @Override
-    public boolean isExist(Long id) {
-        if (employeeDataRepository.findById(id).isEmpty()) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
     public void saveFromFile(String filePath, Reader reader) {
         List<EmployeeData> employeeDataList = reader.read(filePath);
-
 
         for (EmployeeData employeeData : employeeDataList) {
             List<EmployeeData> stored = employeeDataRepository.findByEmployeeID(employeeData.getEmployeeID());
