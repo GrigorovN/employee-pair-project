@@ -34,9 +34,7 @@ public class EmployeeController {
     @GetMapping(path = "/pair/longest")
     public ResponseEntity<EmployeeDataResponse> getMaxPairForAllProject (){
             EmployeeDataResponse response = employeeDataService.findPairWithMaxDays();
-            if (response == null) {
-                throw new RuntimeException( " Here is the problem" );
-            }
+
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

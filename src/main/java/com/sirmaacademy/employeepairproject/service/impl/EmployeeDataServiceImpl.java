@@ -98,7 +98,7 @@ public class EmployeeDataServiceImpl implements EmployeeDataService {
                         pairWithMaxDays = new EmployeeDataResponse(
                                 firstEmployee.getEmployeeID(),
                                 secondEmployee.getEmployeeID(),
-                                totalDaysTogether );
+                                totalDaysTogether, new HashMap<>());
                     }
                 }
             }
@@ -112,12 +112,17 @@ public class EmployeeDataServiceImpl implements EmployeeDataService {
 
         EmployeeDataResponse maxPair = null;
         int maxDaysTogether = 0;
+        Map<Long, Integer> maxProjectDaysMap = new HashMap<>();
+
         for (EmployeeDataResponse response : allPairsWithTotalDays) {
             if (response.getDaysTogether() > maxDaysTogether) {
                 maxDaysTogether = response.getDaysTogether();
                 maxPair = response;
+                maxProjectDaysMap = response.getProjectIDToDaysMap();
             }
         }
+
+        maxPair.setProjectIDToDaysMap(maxProjectDaysMap);
 
         return maxPair;
     }
@@ -128,8 +133,9 @@ public class EmployeeDataServiceImpl implements EmployeeDataService {
         // List of all projects
         List<Long> allProjectIds =employeeDataRepository.findAllProjectIDs();
 
-        // Map to store total days for each pair across all projects
-        Map<List<Long>, Integer> totalDaysMap = new HashMap<>();
+        // Map to store total days for each pair and project across all projects
+        Map<List<Long>, Map<Long, Integer>> totalDaysMap = new HashMap<>();
+
 
         for (Long projectID : allProjectIds) {
             // List of all employees that work on that project
@@ -143,7 +149,6 @@ public class EmployeeDataServiceImpl implements EmployeeDataService {
                     EmployeeData secondEmployee = employeesOnProject.get(j);
 
                     if (workedTogether(firstEmployee, secondEmployee)) {
-
                         // Create a sorted list for the employee pair to prevent duplication in the map
                         List<Long> employeePair = Arrays.asList(
                                 firstEmployee.getEmployeeID(),
@@ -153,19 +158,32 @@ public class EmployeeDataServiceImpl implements EmployeeDataService {
                         // Calculate total days together for the specific project
                         int totalDaysTogether = calculateTotalDaysTogether(firstEmployee, secondEmployee);
 
-                        // Add or update total days in the map
-                        totalDaysMap.merge(employeePair,totalDaysTogether,Integer::sum);
+                        // Initialize the map for the specific pair if not present
+                        totalDaysMap.putIfAbsent(employeePair, new HashMap<>());
+
+                        // Add or update total days in the map for the specific project
+                        totalDaysMap.get(employeePair).merge(projectID, totalDaysTogether, Integer::sum);
                     }
                 }
             }
         }
 
         // Convert the map entries to EmployeeDataResponse objects
-        totalDaysMap.forEach((pair, days) ->
-                allPairsWithTotalDays.add(new EmployeeDataResponse(pair.get(0), pair.get(1), days))
+        totalDaysMap.forEach((pair, projectDaysMap) ->
+                allPairsWithTotalDays.add(new EmployeeDataResponse(
+                        pair.get(0),
+                        pair.get(1),
+                        calculateTotalDaysForPairAcrossProjects(projectDaysMap),
+                        projectDaysMap))
         );
 
         return allPairsWithTotalDays;
+    }
+
+    private int calculateTotalDaysForPairAcrossProjects(Map<Long, Integer> projectDaysMap) {
+        return projectDaysMap.values().stream()
+                .mapToInt(Integer::intValue)
+                .sum();
     }
 
     private int calculateTotalDaysTogether(EmployeeData firstEmployee, EmployeeData secondEmployee) {
