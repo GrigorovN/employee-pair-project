@@ -27,7 +27,6 @@ public class CSVReader implements  Reader{
                 LocalDate dateFrom = DateHelper.parseDate(values[2].trim());
                 LocalDate dateTo =DateHelper.parseDate(values[3].trim());
 
-
                 EmployeeData employeeData =EmployeeData.builder()
                         .employeeID(id)
                         .projectID(projectID)
@@ -42,7 +41,6 @@ public class CSVReader implements  Reader{
 
         return employeeDataList;
     }
-
 
     private void validateInput(String [] values) throws InvalidCSVInputException {
 

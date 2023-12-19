@@ -6,7 +6,6 @@ import java.util.Locale;
 
 public class DateHelper {
 
-
     public static LocalDate parseDate(String dateStr) {
         // Check if the dateStr is NULL
         if (dateStr == null || dateStr.trim().equalsIgnoreCase("NULL")) {

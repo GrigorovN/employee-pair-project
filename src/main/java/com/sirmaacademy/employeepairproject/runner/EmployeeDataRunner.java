@@ -5,7 +5,6 @@ import com.sirmaacademy.employeepairproject.service.EmployeeDataService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-
 @Component
 public class EmployeeDataRunner implements CommandLineRunner {
 
