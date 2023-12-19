@@ -38,6 +38,13 @@ To insert more employee data from another CSV file (in the same format as input.
 localhost:8081/api/v1/employee/add/csv?filepath=<YourFilePath>
 - **Manual Data Operations:**
 The program allows manual operations such as creating, deleting, or updating employee data in the database.
+- Example of JSON for creating: 
+ {
+  "employeeID" : 111,
+  "projectID" : 16,
+  "dateFrom" : "2022-05-15",
+  "dateTo" : "2023-07-28"
+  }
 
 ## Database Configuration
 Before running the program, ensure you have created the employeedb (PostgreSQL Database). Update the **application.properties** file with your PostgreSQL database username and password.

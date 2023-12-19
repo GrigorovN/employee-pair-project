@@ -1,5 +1,6 @@
 package com.sirmaacademy.employeepairproject.service.impl;
 
+import com.sirmaacademy.employeepairproject.Exception.NotFoundException;
 import com.sirmaacademy.employeepairproject.dto.EmployeeDataResponse;
 import com.sirmaacademy.employeepairproject.entity.EmployeeData;
 import com.sirmaacademy.employeepairproject.filemanipulator.Reader;
@@ -26,12 +27,17 @@ public class EmployeeDataServiceImpl implements EmployeeDataService {
 
     @Override
     public void delete(Long id) {
-            //TODO
+           if (employeeDataRepository.existsById(id)) {
+               employeeDataRepository.deleteById(id);
+           }
+           else {
+               throw new NotFoundException("Employee data with id: " + id +" does not exist");
+           }
     }
 
     @Override
     public List<EmployeeData> getByEmployeeID(Long employeeID) {
-        return employeeDataRepository.findByEmployeeID(employeeID);
+        return employeeDataRepository.findByEmployeeID(employeeID).orElseThrow(()-> new NotFoundException("There are no employee data with id: " + employeeID));
     }
 
     @Override
@@ -39,7 +45,7 @@ public class EmployeeDataServiceImpl implements EmployeeDataService {
         List<EmployeeData> employeeDataList = reader.read(filePath);
 
         for (EmployeeData employeeData : employeeDataList) {
-            List<EmployeeData> stored = employeeDataRepository.findByEmployeeID(employeeData.getEmployeeID());
+            List<EmployeeData> stored = employeeDataRepository.findByEmployeeID(employeeData.getEmployeeID()).orElse(new ArrayList<>());
             // Check if there is employee with same ID
             if (stored.isEmpty()) {
                 employeeDataRepository.save(employeeData);
@@ -89,7 +95,7 @@ public class EmployeeDataServiceImpl implements EmployeeDataService {
 
         for (Long projectID : allProjectIds) {
             // List of all employees that work on that project
-            List<EmployeeData> employeesOnProject = employeeDataRepository.findByProjectID(projectID);
+            List<EmployeeData> employeesOnProject = employeeDataRepository.findByProjectID(projectID).orElseThrow();
 
             //Compare all employees who have worked on same project did they work together
             for (int i = 0; i < employeesOnProject.size(); i++) {

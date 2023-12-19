@@ -6,14 +6,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
 public interface EmployeeDataRepository extends JpaRepository<EmployeeData, Long> {
 
-    List<EmployeeData> findByEmployeeID (Long employeeID);
+    Optional<List<EmployeeData>> findByEmployeeID (Long employeeID);
 
-    List<EmployeeData> findByProjectID (Long projectID);
+    Optional<List<EmployeeData>> findByProjectID (Long projectID);
 
     @Query("SELECT DISTINCT ed.projectID FROM EmployeeData ed")
     List<Long> findAllProjectIDs ();
