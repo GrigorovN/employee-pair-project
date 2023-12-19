@@ -37,7 +37,7 @@ To insert more employee data from another CSV file (in the same format as input.
 
 localhost:8081/api/v1/employee/add/csv?filepath=<YourFilePath>
 - **Manual Data Operations:**
-The program allows manual operations such as creating, deleting, or updating employee data in the database.
+The program allows manual operations such as creating or deleting employee data in the database.
 - Example of JSON for creating: 
  {
   "employeeID" : 111,
