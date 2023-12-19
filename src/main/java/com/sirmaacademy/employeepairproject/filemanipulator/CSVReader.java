@@ -9,11 +9,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CSVReader implements  Reader{
     @Override
-    public List<EmployeeData> read(String fileName) {
+    public List<EmployeeData> read(String fileName) throws InvalidCSVInputException{
         List<EmployeeData> employeeDataList = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
@@ -27,6 +28,10 @@ public class CSVReader implements  Reader{
                 LocalDate dateFrom = DateHelper.parseDate(values[2].trim());
                 LocalDate dateTo =DateHelper.parseDate(values[3].trim());
 
+                if (dateTo.isBefore(dateFrom)) {
+                    throw new InvalidCSVInputException("Date from can not be after date To: " + Arrays.toString(values));
+                }
+
                 EmployeeData employeeData =EmployeeData.builder()
                         .employeeID(id)
                         .projectID(projectID)
@@ -36,7 +41,7 @@ public class CSVReader implements  Reader{
                 employeeDataList.add(employeeData);
             }
         } catch (IOException | InvalidCSVInputException e) {
-            e.printStackTrace();
+            throw new InvalidCSVInputException(e.getMessage());
         }
 
         return employeeDataList;

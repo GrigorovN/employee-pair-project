@@ -1,5 +1,6 @@
 package com.sirmaacademy.employeepairproject.service;
 
+import com.sirmaacademy.employeepairproject.Exception.InvalidCSVInputException;
 import com.sirmaacademy.employeepairproject.dto.EmployeeDataResponse;
 import com.sirmaacademy.employeepairproject.entity.EmployeeData;
 import com.sirmaacademy.employeepairproject.filemanipulator.Reader;
@@ -14,7 +15,7 @@ public interface EmployeeDataService {
 
      List<EmployeeData> getByEmployeeID(Long employeeID);
 
-     void saveFromFile(String filePath, Reader reader);
+     void saveFromFile(String filePath, Reader reader) throws InvalidCSVInputException;
 
      EmployeeDataResponse findPairWithMaxDays();
 

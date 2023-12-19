@@ -1,5 +1,6 @@
 package com.sirmaacademy.employeepairproject.service.impl;
 
+import com.sirmaacademy.employeepairproject.Exception.InvalidCSVInputException;
 import com.sirmaacademy.employeepairproject.Exception.NotFoundException;
 import com.sirmaacademy.employeepairproject.dto.EmployeeDataResponse;
 import com.sirmaacademy.employeepairproject.entity.EmployeeData;
@@ -22,6 +23,9 @@ public class EmployeeDataServiceImpl implements EmployeeDataService {
 
     @Override
     public EmployeeData save(EmployeeData employeeData) {
+        if (employeeData.getDateFrom().isAfter(employeeData.getDateTo())) {
+            throw new IllegalArgumentException("Date from cannot be after date to");
+        }
         return employeeDataRepository.save(employeeData);
     }
 
@@ -41,8 +45,9 @@ public class EmployeeDataServiceImpl implements EmployeeDataService {
     }
 
     @Override
-    public void saveFromFile(String filePath, Reader reader) {
+    public void saveFromFile(String filePath, Reader reader) throws InvalidCSVInputException {
         List<EmployeeData> employeeDataList = reader.read(filePath);
+
 
         for (EmployeeData employeeData : employeeDataList) {
             List<EmployeeData> stored = employeeDataRepository.findByEmployeeID(employeeData.getEmployeeID()).orElse(new ArrayList<>());
